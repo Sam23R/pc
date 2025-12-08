@@ -1,0 +1,36 @@
+Create: gedit prg4.c
+Compile: gcc -fopenmp prg4.c -o prg4 -lm
+Run: export OMP_NUM_THREADS=4 && ./prg4
+
+
+#include <stdio.h>
+#include <math.h>
+#include <omp.h>
+
+int is_prime(int num) {
+    if (num < 2) return 0;
+    for (int i = 2; i <= sqrt(num); i++)
+        if (num % i == 0) return 0;
+    return 1;
+}
+
+int main() {
+    int n;
+    printf("Enter value of n: ");
+    scanf("%d", &n);
+
+    for (int i = 1; i <= n; i++)
+        if (is_prime(i)) printf("%d ", i);
+    printf("\n");
+
+    double s = omp_get_wtime();
+    for (int i = 1; i <= n; i++) is_prime(i);
+    printf("Serial Time: %f\n", omp_get_wtime() - s);
+
+    s = omp_get_wtime();
+    #pragma omp parallel for
+    for (int i = 1; i <= n; i++) is_prime(i);
+    printf("Parallel Time: %f\n", omp_get_wtime() - s);
+
+    return 0;
+}
