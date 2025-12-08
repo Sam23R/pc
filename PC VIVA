@@ -93,6 +93,8 @@ Q: What is the difference between MPI_Reduce() and MPI_Allreduce()?
  A: MPI_Reduce() returns result only to root, while MPI_Allreduce() sends the result to all processes.
 Q: Which collective functions can compute sum, min, max and product?
  A: Both MPI_Reduce() and MPI_Allreduce() using operators like MPI_SUM, MPI_MAX, etc.
+
+
 1. What is OpenMP?
 A shared-memory parallel programming API for C, C++ and Fortran.
 2. Which compiler flag enables OpenMP in GCC?
