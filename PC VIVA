@@ -1,0 +1,370 @@
+1. OpenMP mergesort (sequential vs parallel using sections)
+Q: How do you write an OpenMP program to sort an array of n elements using sequential and parallel mergesort and record execution time?
+ A: Implement mergesort first sequentially, then parallelize merge calls using #pragma omp parallel sections, measure time using omp_get_wtime() for both and compare speedup.
+
+2. OpenMP static scheduling with chunk size 2
+Q: How do you divide loop iterations into chunks of size 2 using OpenMP scheduling?
+ A: Use OMP_SCHEDULE=static,2 or compile with #pragma omp parallel for schedule(static,2) and print which thread executes which 2 iterations.
+
+3. OpenMP Fibonacci using tasks
+Q: How do you generate the first n Fibonacci numbers using OpenMP tasks?
+ A: Create recursive tasks using #pragma omp task for computing fib(n-1) and fib(n-2) ensuring #pragma omp taskwait synchronizes them.
+
+4. OpenMP prime number generation with time comparison
+Q: How do you find all primes from 1 to n using OpenMP and record execution time?
+ A: Use a parallelized for-loop with #pragma omp parallel for to test primality and compare execution time with sequential code using omp_get_wtime().
+
+5. MPI send & receive
+Q: How do you demonstrate MPI_Send and MPI_Recv?
+ A: Write a program where Process 0 sends data to Process 1 using MPI_Send() and Process 1 receives it with MPI_Recv() and prints acknowledgment.
+
+6. MPI program to show and avoid deadlock
+Q: How is deadlock demonstrated using MPI point-to-point communication and how is it avoided?
+ A: Create two processes where both wait on MPI_Recv() first causing deadlock, then fix it by altering order (send first or use MPI_Sendrecv).
+
+7. MPI Broadcast
+Q: How do you write an MPI program to demonstrate broadcast?
+ A: Use MPI_Bcast() to send a value from the root process to all other processes and print data at each rank to check uniform distribution.
+
+8. MPI Scatter and Gather
+Q: How do you demonstrate MPI_Scatter and MPI_Gather?
+ A: Use MPI_Scatter() to distribute array chunks to each process and MPI_Gather() to collect processed results back to the root.
+
+9. MPI Reduce & Allreduce
+Q: How do you demonstrate MPI_Reduce and MPI_Allreduce using max, min, sum, product?
+ A: Perform reduction operations such as MPI_SUM, MPI_MAX, etc. using MPI_Reduce() on all ranks and compare the global output with MPI_Allreduce() which returns result to all processes.
+
+If you want, I can also provide full programs + output + explanation for each question.
+You said:
+some more questions and answers
+ChatGPT said:
+Here are additional one–two-statement Question and Answer pairs based on the same topics:
+
+🔹 OpenMP – Mergesort & Performance
+Q: Why is parallel mergesort faster for large input arrays compared to sequential?
+ A: Parallel mergesort divides sorting work across threads allowing simultaneous sub-problem execution, reducing overall runtime for large input sizes.
+Q: Which OpenMP clause is commonly used to parallelize merge operations?
+ A: #pragma omp parallel sections is used to run recursive merge calls concurrently.
+
+🔹 OpenMP Static Scheduling (static,2)
+Q: What is the significance of using chunk size 2 with static scheduling?
+ A: It ensures each thread gets fixed two iterations at a time, providing predictable workload distribution.
+Q: How can you verify thread distribution across loop iterations?
+ A: Print thread ID along with iteration number inside the parallel for loop.
+
+🔹 OpenMP Fibonacci Using Tasks
+Q: Why are tasks preferred for recursive Fibonacci computation?
+ A: Tasks dynamically distribute recursive calls across threads improving parallelism.
+Q: Which directive ensures child Fibonacci tasks complete before returning?
+ A: #pragma omp taskwait synchronizes all launched tasks.
+
+🔹 OpenMP Prime Number Finder
+Q: Which directive is used to parallelize prime checking from 1 to n?
+ A: #pragma omp parallel for divides primality testing across threads.
+Q: What metric is used to compare sequential vs parallel execution?
+ A: Wall-clock time using omp_get_wtime().
+
+🔹 MPI Send/Receive
+Q: Why must matching MPI_Send and MPI_Recv have identical datatypes and tags?
+ A: Mismatch leads to communication errors or deadlocks in message passing.
+Q: What determines which process sends the message?
+ A: The rank value obtained from MPI_Comm_rank().
+
+🔹 MPI Deadlock Demonstration
+Q: What causes deadlock in point-to-point MPI programs?
+ A: When both processes wait for MPI_Recv() without sending first.
+Q: Name one method to avoid MPI deadlock.
+ A: Reverse call order or use non-blocking send/receive like MPI_Isend() and MPI_Irecv().
+
+🔹 MPI Broadcast
+Q: Which parameter in MPI_Bcast() specifies the process sending data?
+ A: The root parameter.
+Q: Why is broadcast useful in parallel programs?
+ A: It distributes common input to all processes simultaneously, reducing repetitive communication.
+
+🔹 MPI Scatter/Gather
+Q: How does MPI_Scatter differ from MPI_Bcast?
+ A: Scatter sends different parts of an array to each process, while broadcast sends the entire data to all.
+Q: What function is used to collect distributed results back to root?
+ A: MPI_Gather().
+
+🔹 MPI Reduce & Allreduce
+Q: What is the difference between MPI_Reduce() and MPI_Allreduce()?
+ A: MPI_Reduce() returns result only to root, while MPI_Allreduce() sends the result to all processes.
+Q: Which collective functions can compute sum, min, max and product?
+ A: Both MPI_Reduce() and MPI_Allreduce() using operators like MPI_SUM, MPI_MAX, etc.
+1. What is OpenMP?
+A shared-memory parallel programming API for C, C++ and Fortran.
+2. Which compiler flag enables OpenMP in GCC?
+-fopenmp
+3. How do you create a parallel region in OpenMP?
+Using #pragma omp parallel
+4. What does omp_get_thread_num() return?
+The ID of the current thread.
+5. How do you find total threads in OpenMP?
+omp_get_num_threads()
+6. What is the purpose of default(none) clause?
+To force variables to be explicitly declared shared/private.
+7. How to set number of threads manually?
+omp_set_num_threads(n) or environment variable OMP_NUM_THREADS.
+8. What is shared memory programming?
+Multiple threads share same address space.
+9. What is the use of private clause?
+Each thread gets its own copy of a variable.
+10. What is critical section used for?
+To allow only one thread at a time to execute a block.
+
+11. Why compare serial vs parallel mergesort?
+To measure speedup and performance improvement.
+12. Which directive parallelizes recursive mergesort?
+#pragma omp parallel sections
+13. Why use omp_get_wtime()?
+It records parallel execution time.
+14. Why parallel mergesort is faster for large inputs?
+Because sub-problems run concurrently on different threads.
+15. Complexity of mergesort?
+Time: O(n log n)
+
+16. What is loop scheduling?
+How iterations are divided among threads.
+17. What does schedule(static,2) do?
+Assigns fixed chunks of 2 iterations per thread cyclically.
+18. When is static scheduling good?
+When all iterations have similar workload.
+19. What is schedule(dynamic)?
+Threads take work when free — useful in unbalanced loops.
+20. What is guided scheduling?
+Chunk size decreases gradually at runtime.
+
+21. What is an OpenMP task?
+A unit of work to be executed independently by any thread.
+22. Why is Fibonacci calculated using tasks?
+It is recursive and task-based parallelism fits well.
+23. What is taskwait?
+Synchronizes all tasks before proceeding.
+24. Why tasks may not always speed up Fibonacci?
+Too many task creations cause overhead.
+25. How to avoid excessive task creation?
+Use condition: create tasks only for n > threshold.
+
+26. How do you parallelize prime number search?
+Using #pragma omp parallel for.
+27. Why is prime checking expensive for large n?
+Each number requires repeated divisibility testing.
+28. Why compare serial vs parallel prime checking time?
+To observe performance benefits of multi-threading.
+29. What is false sharing?
+Multiple threads modifying adjacent memory causing cache invalidation.
+30. How to reduce false sharing?
+Use padding or avoid adjacent write access.
+
+🔹 MPI Viva – Questions & Answers
+31. What is MPI?
+Message Passing Interface — used for distributed memory parallelism.
+32. Which function initializes MPI?
+MPI_Init()
+33. How do you finalize MPI program?
+MPI_Finalize()
+34. What does MPI_Comm_rank() return?
+Rank (ID) of a process.
+35. What does MPI_Comm_size() return?
+Total number of processes.
+
+36. What is MPI_Send()?
+Used to send a message to a specific process.
+37. What is MPI_Recv()?
+Used to receive a message from another process.
+38. When does deadlock occur in MPI?
+When two processes wait to receive without sending first.
+39. How to avoid MPI deadlock?
+Send first or use MPI_Sendrecv() / non-blocking communication.
+40. What is blocking communication?
+Send/Recv doesn't return until operation completes.
+
+41. What is non-blocking MPI call?
+MPI_Isend() / MPI_Irecv() — returns immediately without waiting.
+42. What is MPI_Bcast()?
+Broadcasts data from root process to all processes.
+43. How is Scatter different from Broadcast?
+Scatter sends different chunks to each process; broadcast sends same data to all.
+44. What is MPI_Gather()?
+Collects data from all processes to the root.
+45. When do we use Scatter-Gather?
+To distribute tasks and collect final results.
+
+46. What is MPI_Reduce()?
+Computes global result (sum/min/max etc.) returned only to root.
+47. What is MPI_Allreduce()?
+Same as Reduce but result returned to all processes.
+48. Name 4 MPI reduction operators.
+MPI_SUM, MPI_MAX, MPI_MIN, MPI_PROD
+49. Why is Allreduce better for global availability?
+Because all processes get final result immediately.
+50. Why MPI works well on clusters?
+Each process has its own memory — supports scalable distributed computing.
+
+OpenMP – General Concepts
+What is OpenMP and why is it used?
+
+
+Which compiler flag enables OpenMP in C/C++?
+
+
+What is a thread in OpenMP?
+
+
+Name two OpenMP directives used for loop parallelization.
+
+
+What is the role of #pragma omp parallel?
+
+
+What does omp_get_thread_num() return?
+
+
+How do you measure execution time in OpenMP?
+
+
+What happens if the number of threads is not set?
+
+
+What is parallel region in OpenMP?
+
+
+Difference between private and shared clause?
+
+
+
+🔷 Parallel vs Sequential Execution
+Why can parallel execution be faster than sequential?
+
+
+When does parallel execution perform worse than serial?
+
+
+What is speedup in parallel computing?
+
+
+How do you calculate speedup?
+
+
+Why is load balancing important?
+
+
+
+🔷 OpenMP Mergesort Program
+Why is mergesort suitable for parallelization?
+
+
+Which directive parallelizes merge calls?
+
+
+Why must we use taskwait or sections join in mergesort?
+
+
+What is the complexity of mergesort?
+
+
+Why does parallel mergesort show better performance for larger inputs?
+
+
+
+🔷 OpenMP Scheduling & Loop Control
+What does schedule(static,2) mean?
+
+
+Difference between static, dynamic and guided scheduling?
+
+
+When would static scheduling be best?
+
+
+How can you print which iteration each thread executes?
+
+
+What environment variable sets scheduling policy?
+
+
+
+🔷 OpenMP Fibonacci Task Program
+What is the use of #pragma omp task?
+
+
+Why is recursion suitable for task parallelism?
+
+
+Why do we need taskwait?
+
+
+What happens if tasks exceed number of threads?
+
+
+How can stack overflow occur in recursive Fibonacci tasks?
+
+
+
+🔷 OpenMP – Prime Number Program
+Which directive is used to parallelize prime checking?
+
+
+Why is primality testing computationally expensive?
+
+
+How do you compare serial vs parallel time difference?
+
+
+Why should shared variables be protected in parallel loops?
+
+
+What is false sharing?
+
+
+
+🔷 MPI Basics
+What does MPI stand for?
+
+
+What is the function of MPI_Init()?
+
+
+What does MPI_Comm_rank() return?
+
+
+What is a communicator in MPI?
+
+
+Why do MPI programs require multiple processes instead of threads?
+
+
+
+🔷 MPI Send & Receive
+Which functions are used for point-to-point communication?
+
+
+What causes deadlock in MPI Send/Recv?
+
+
+How do you avoid deadlock?
+
+
+Difference between blocking and non-blocking communication?
+
+
+What argument matches sender and receiver messages?
+
+
+
+🔷 MPI Collective Operations
+What is the purpose of MPI_Bcast()?
+
+
+How is Scatter different from Broadcast?
+
+
+What is MPI_Gather() used for?
+
+
+Difference between Reduce and Allreduce?
+
+
+Name four MPI reduction operations.
